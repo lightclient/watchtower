@@ -2,6 +2,9 @@ package kubernetes
 
 import (
 	"fmt"
+	"strings"
+
+	root "github.com/c-o-l-o-r/watchtower/pkg"
 
 	appsv1 "k8s.io/api/apps/v1"
 	apiv1 "k8s.io/api/core/v1"
@@ -16,10 +19,14 @@ func NewWatchtowerService(c *Client) *WatchtowerService {
 	return &WatchtowerService{c}
 }
 
-func (p *WatchtowerService) CreateWatchtower(address string) error {
+func (p *WatchtowerService) CreateWatchtower(a root.WatchtowerAttributes) error {
+
+	// Address provided to kubernetes must be lowercase in order to adhere to RFC 1123
+	lowercaseAddress := strings.ToLower(a.Address)
+
 	deployment := &appsv1.Deployment{
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      fmt.Sprintf("watchtower-%s", address),
+			Name:      fmt.Sprintf("watchtower-%s", lowercaseAddress),
 			Namespace: "watchtower",
 		},
 		Spec: appsv1.DeploymentSpec{
@@ -41,7 +48,7 @@ func (p *WatchtowerService) CreateWatchtower(address string) error {
 							Name:    "web",
 							Image:   "busybox",
 							Command: []string{"/bin/sh"},
-							Args:    []string{"-c", fmt.Sprintf("echo %s && sleep 1000", address)},
+							Args:    []string{"-c", fmt.Sprintf("echo %s && sleep 1000", lowercaseAddress)},
 							Ports: []apiv1.ContainerPort{
 								{
 									Name:          "http",

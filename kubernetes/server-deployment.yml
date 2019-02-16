@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: server-deployment
+  namespace: watchtower
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: server
+  template:
+    metadata:
+      labels:
+        component: server
+    spec:
+      containers:
+        - name: server
+          image: mattgarnett/auto-k8s:REPLACE_WITH_TAG
+          command: ["app"]
+          ports:
+            - containerPort: 8080
+          imagePullPolicy: Always

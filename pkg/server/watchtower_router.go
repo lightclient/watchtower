@@ -1,6 +1,7 @@
 package server
 
 import (
+	"encoding/json"
 	"net/http"
 
 	root "github.com/c-o-l-o-r/watchtower/pkg"
@@ -17,6 +18,25 @@ func NewWatchtowerRouter(w root.WatchtowerService, router *mux.Router) *mux.Rout
 	return router
 }
 
-func (ur *watchtowerRouter) createWatchtowerHandler(w http.ResponseWriter, r *http.Request) {
-	Json(w, http.StatusOK, "ok")
+func (wt *watchtowerRouter) createWatchtowerHandler(w http.ResponseWriter, r *http.Request) {
+	watchtowerAttributes, err := decodeWatchtowerAttributes(r)
+	if err != nil {
+		panic(err)
+	}
+
+	err = wt.watchtowerService.CreateWatchtower(watchtowerAttributes)
+	if err != nil {
+		panic(err)
+	}
+
+	Json(w, http.StatusOK, "success")
+}
+
+func decodeWatchtowerAttributes(r *http.Request) (root.WatchtowerAttributes, error) {
+	decoder := json.NewDecoder(r.Body)
+
+	var w root.WatchtowerAttributes
+	err := decoder.Decode(&w)
+
+	return w, err
 }

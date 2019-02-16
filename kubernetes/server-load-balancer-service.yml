@@ -1,0 +1,12 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: server-load-balancer
+  namespace: watchtower
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+    targetPort: 8080
+  selector:
+    component: server

@@ -1,5 +1,6 @@
 const utils = require('./utils')
 const twilio = require('./clients/twilio')
+const twitter = require('./clients/twitter')
 
 // const defaultOptions = {
 //   port: '9898',
@@ -42,7 +43,7 @@ class Watchtower {
 
     try {
       console.log('polling')
-      this._sendSMS('Your funds are running away!')
+      this._notifyOwner()
     } finally {
       // await utils.sleep(1000)
       // this._pollOperator()
@@ -56,7 +57,7 @@ class Watchtower {
   async _notifyOwner() {
     await Promise.all([
       this._sendSMS(),
-      // this._sendTweet(),
+      this._sendTweet(),
     ])
   }
 
@@ -75,8 +76,13 @@ class Watchtower {
   /**
    * Post a Tweet to the Plasma chain's Twitter account
    */
-  async _sendTweet() {
-    throw 'not implemented'
+  async _sendTweet(data) {
+    console.log('sending tweet')
+    try {
+      await twitter.post('Bad stuff is happening on the chain!')
+    } catch(e) {
+      console.log(e)
+    }
   }
 }
 

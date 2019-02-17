@@ -6,6 +6,7 @@ import (
 
 	root "github.com/c-o-l-o-r/watchtower/pkg"
 	"github.com/gorilla/mux"
+	"github.com/gorilla/schema"
 )
 
 type watchtowerRouter struct {
@@ -14,12 +15,22 @@ type watchtowerRouter struct {
 
 func NewWatchtowerRouter(w root.WatchtowerService, router *mux.Router) *mux.Router {
 	watchtowerRouter := watchtowerRouter{w}
-	router.HandleFunc("/", watchtowerRouter.createWatchtowerHandler).Methods("POST")
+
+	router.HandleFunc("/", watchtowerRouter.createWatchtowerJSONHandler).
+		HeadersRegexp("Content-Type", "application/(text|json)").
+		Methods("POST")
+
+	router.HandleFunc("/", watchtowerRouter.createWatchtowerFormHandler).
+		HeadersRegexp("Content-Type", "application/x-www-form-urlencoded").
+		Methods("POST")
+
 	return router
 }
 
-func (wt *watchtowerRouter) createWatchtowerHandler(w http.ResponseWriter, r *http.Request) {
-	watchtowerAttributes, err := decodeWatchtowerAttributes(r)
+func (wt *watchtowerRouter) createWatchtowerJSONHandler(w http.ResponseWriter, r *http.Request) {
+	decoder := json.NewDecoder(r.Body)
+	var watchtowerAttributes root.WatchtowerAttributes
+	err := decoder.Decode(&watchtowerAttributes)
 	if err != nil {
 		panic(err)
 	}
@@ -32,11 +43,23 @@ func (wt *watchtowerRouter) createWatchtowerHandler(w http.ResponseWriter, r *ht
 	Json(w, http.StatusOK, "success")
 }
 
-func decodeWatchtowerAttributes(r *http.Request) (root.WatchtowerAttributes, error) {
-	decoder := json.NewDecoder(r.Body)
+func (wt *watchtowerRouter) createWatchtowerFormHandler(w http.ResponseWriter, r *http.Request) {
+	err := r.ParseForm()
+	if err != nil {
+		panic(err)
+	}
 
-	var w root.WatchtowerAttributes
-	err := decoder.Decode(&w)
+	decoder := schema.NewDecoder()
+	var watchtowerAttributes root.WatchtowerAttributes
+	err = decoder.Decode(&watchtowerAttributes, r.PostForm)
+	if err != nil {
+		panic(err)
+	}
 
-	return w, err
+	err = wt.watchtowerService.CreateWatchtower(watchtowerAttributes)
+	if err != nil {
+		panic(err)
+	}
+
+	Json(w, http.StatusOK, "success")
 }

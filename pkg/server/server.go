@@ -1,6 +1,7 @@
 package server
 
 import (
+	"html/template"
 	"log"
 	"net/http"
 	"os"
@@ -22,6 +23,7 @@ func NewServer(w root.WatchtowerService, config *root.Config) *Server {
 	}
 
 	NewWatchtowerRouter(w, s.getSubrouter("/watchtower"))
+	s.router.HandleFunc("/", IndexHandler)
 	return &s
 }
 
@@ -34,4 +36,37 @@ func (s *Server) Start() {
 
 func (s *Server) getSubrouter(path string) *mux.Router {
 	return s.router.PathPrefix(path).Subrouter()
+}
+
+func IndexHandler(w http.ResponseWriter, r *http.Request) {
+	index := `
+		<html>
+			<head>
+				<style>
+				</style>
+			</head>
+			<body>
+					<form action="/watchtower/" method="post">
+						Ethereum Address:
+						<input type="text" name="address">
+
+						Email:
+						<input type="text" name="email">
+						
+						Phone number:
+						<input type="text" name="phone">
+
+						<input type="submit" value="Submit">
+					</form> 
+			</body>
+		</html>
+	`
+
+	t := template.New("index")
+	t, err := t.Parse(index)
+	if err != nil {
+		panic(err)
+	}
+
+	t.Execute(w, nil)
 }

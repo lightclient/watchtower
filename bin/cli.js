@@ -9,7 +9,6 @@ const Watchtower = require('../src/watchtower')
 program
   .version('0.0.1')
   .option('-a, --address <address>', 'Public address to monitor')
-  .option('-e, --email <email>', 'Email to recieve notifications')
   .option('-p, --phone <phone>', 'Phone number to recieve SMS notifications on')
   .parse(process.argv)
 

@@ -2,6 +2,7 @@ package server
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	root "github.com/c-o-l-o-r/watchtower/manager/pkg"
@@ -61,5 +62,6 @@ func (wt *watchtowerRouter) createWatchtowerFormHandler(w http.ResponseWriter, r
 		panic(err)
 	}
 
-	Json(w, http.StatusOK, "success")
+	redirectURL := fmt.Sprintf("%s?success=true&address=%s", r.Header.Get("Referer"), watchtowerAttributes.Address)
+	http.Redirect(w, r, redirectURL, 302)
 }

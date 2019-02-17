@@ -39,31 +39,8 @@ func (s *Server) getSubrouter(path string) *mux.Router {
 }
 
 func IndexHandler(w http.ResponseWriter, r *http.Request) {
-	index := `
-		<html>
-			<head>
-				<style>
-				</style>
-			</head>
-			<body>
-					<form action="/watchtower/" method="post">
-						Ethereum Address:
-						<input type="text" name="address">
-
-						Email:
-						<input type="text" name="email">
-						
-						Phone number:
-						<input type="text" name="phone">
-
-						<input type="submit" value="Submit">
-					</form> 
-			</body>
-		</html>
-	`
-
 	t := template.New("index")
-	t, err := t.Parse(index)
+	t, err := t.Parse(Index)
 	if err != nil {
 		panic(err)
 	}

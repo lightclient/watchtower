@@ -45,14 +45,93 @@ func (p *WatchtowerService) CreateWatchtower(a root.WatchtowerAttributes) error 
 					Containers: []apiv1.Container{
 						{
 							Name:    "web",
-							Image:   "busybox",
-							Command: []string{"/bin/sh"},
-							Args:    []string{"-c", fmt.Sprintf("echo %s && sleep 1000", lowercaseAddress)},
+							Image:   "mattgarnett/watchtower:600ba50",
+							Command: []string{"node"},
+							Args:    []string{"./bin/cli.js", "-p", a.Phone},
 							Ports: []apiv1.ContainerPort{
 								{
 									Name:          "http",
 									Protocol:      apiv1.ProtocolTCP,
 									ContainerPort: 80,
+								},
+							},
+							Env: []apiv1.EnvVar{
+								{
+									Name: "TWILIO_AUTH_TOKEN",
+									ValueFrom: &apiv1.EnvVarSource{
+										ConfigMapKeyRef: &apiv1.ConfigMapKeySelector{
+											LocalObjectReference: apiv1.LocalObjectReference{
+												Name: "watchtower-config",
+											},
+											Key: "TWILIO_AUTH_TOKEN",
+										},
+									},
+								},
+								{
+									Name: "TWILIO_SID",
+									ValueFrom: &apiv1.EnvVarSource{
+										ConfigMapKeyRef: &apiv1.ConfigMapKeySelector{
+											LocalObjectReference: apiv1.LocalObjectReference{
+												Name: "watchtower-config",
+											},
+											Key: "TWILIO_SID",
+										},
+									},
+								},
+								{
+									Name: "TWILIO_FROM_NUMBER",
+									ValueFrom: &apiv1.EnvVarSource{
+										ConfigMapKeyRef: &apiv1.ConfigMapKeySelector{
+											LocalObjectReference: apiv1.LocalObjectReference{
+												Name: "watchtower-config",
+											},
+											Key: "TWILIO_FROM_NUMBER",
+										},
+									},
+								},
+								{
+									Name: "TWITTER_CONSUMER_KEY",
+									ValueFrom: &apiv1.EnvVarSource{
+										ConfigMapKeyRef: &apiv1.ConfigMapKeySelector{
+											LocalObjectReference: apiv1.LocalObjectReference{
+												Name: "watchtower-config",
+											},
+											Key: "TWITTER_CONSUMER_KEY",
+										},
+									},
+								},
+								{
+									Name: "TWITTER_CONSUMER_SECRET",
+									ValueFrom: &apiv1.EnvVarSource{
+										ConfigMapKeyRef: &apiv1.ConfigMapKeySelector{
+											LocalObjectReference: apiv1.LocalObjectReference{
+												Name: "watchtower-config",
+											},
+											Key: "TWITTER_CONSUMER_SECRET",
+										},
+									},
+								},
+								{
+									Name: "TWITTER_ACCESS_TOKEN",
+									ValueFrom: &apiv1.EnvVarSource{
+										ConfigMapKeyRef: &apiv1.ConfigMapKeySelector{
+											LocalObjectReference: apiv1.LocalObjectReference{
+												Name: "watchtower-config",
+											},
+											Key: "TWITTER_ACCESS_TOKEN",
+										},
+									},
+								},
+								{
+									Name: "TWITTER_ACCESS_TOKEN_SECRET",
+									ValueFrom: &apiv1.EnvVarSource{
+										ConfigMapKeyRef: &apiv1.ConfigMapKeySelector{
+											LocalObjectReference: apiv1.LocalObjectReference{
+												Name: "watchtower-config",
+											},
+											Key: "TWITTER_ACCESS_TOKEN_SECRET",
+										},
+									},
 								},
 							},
 						},

@@ -1,5 +1,4 @@
-.DS_STORE
-app
-.env
+manager
 node_modules
 configmap.yml
+.env

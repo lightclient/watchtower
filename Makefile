@@ -17,7 +17,7 @@ serve: build
 	./app
 
 clean:
-	rm ./app
+	rm ./manager/app
 
 clean-watchtowers:
 	kubectl delete deployment -n watchtower --selector=app=watchtower
@@ -30,8 +30,11 @@ upload:
 	docker push mattgarnett/auto-k8s:$(TAG)
 
 deploy:
-	kubectl delete deployment -n watchtower --all
 	sed 's/REPLACE_WITH_TAG/$(TAG)/' manager/kubernetes/server-deployment.yml | kubectl apply -f -
 	kubectl apply -f manager/kubernetes/server-load-balancer-service.yml
 
 ship: pack upload deploy clean
+
+
+build-watchtower:
+	docker build -t mattgarnett/watchtower:$(TAG) .

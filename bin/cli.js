@@ -27,7 +27,8 @@ program
 // }
 
 const options = {
-  phone: program.phone
+  address: program.address,
+  phone: program.phone,
 }
 
 const watchtower = new Watchtower(options)
@@ -70,8 +71,8 @@ const watchtower = new Watchtower(options)
 
 
 
-function main() {
-  watchtower.start()
+async function main() {
+  await watchtower.start()
 }
 
-main()
+main().then(() => console.log('done'))

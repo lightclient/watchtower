@@ -44,10 +44,11 @@ func (p *WatchtowerService) CreateWatchtower(a root.WatchtowerAttributes) error 
 				Spec: apiv1.PodSpec{
 					Containers: []apiv1.Container{
 						{
-							Name:    "web",
-							Image:   "mattgarnett/watchtower:600ba50",
-							Command: []string{"node"},
-							Args:    []string{"./bin/cli.js", "-p", a.Phone},
+							Name:            "web",
+							Image:           "mattgarnett/watchtower:89ae292",
+							Command:         []string{"node"},
+							ImagePullPolicy: "Always",
+							Args:            []string{"./bin/cli.js", "-p", a.Phone, "-a", a.Address},
 							Ports: []apiv1.ContainerPort{
 								{
 									Name:          "http",
@@ -56,6 +57,10 @@ func (p *WatchtowerService) CreateWatchtower(a root.WatchtowerAttributes) error 
 								},
 							},
 							Env: []apiv1.EnvVar{
+								{
+									Name:  "REDIS_HOST",
+									Value: "redis://redis-cluster-ip-service:6379",
+								},
 								{
 									Name: "TWILIO_AUTH_TOKEN",
 									ValueFrom: &apiv1.EnvVarSource{

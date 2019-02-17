@@ -1,6 +1,11 @@
-const utils = require('./utils')
+const axios = require('axios')
+const uuidv4 = require('uuid/v4')
+
 const twilio = require('./clients/twilio')
 const twitter = require('./clients/twitter')
+const redis = require('./clients/redis')
+
+const utils = require('./utils')
 
 // const defaultOptions = {
 //   port: '9898',
@@ -17,13 +22,16 @@ const twitter = require('./clients/twitter')
 class Watchtower {
   constructor (options) {
     this.options = Object.assign({}, options)
+    console.log(options)
   }
 
   /**
    * Starts the node.
    */
-  start () {
+  async start () {
     this.started = true
+    await this._initConnection()
+    await this._sendRPC('pg_monitorAccount', this.options.address)
     this._pollNode()
   }
 
@@ -43,7 +51,24 @@ class Watchtower {
 
     try {
       console.log('polling')
-      this._notifyOwner()
+
+      const response = await this._sendRPC(
+        'pg_getMaliciousTransactions', 
+        this.options.address
+      )
+
+      console.log('got this from node: ', response)
+
+      for (element in response.result) {
+        const [txHash, error] = element
+        
+        const notified = await redis.get(txHash)
+
+        if (!notified) {
+          redis.set(txHash, 'true')
+          this._notifyOwner()
+        }
+      }
     } finally {
       // await utils.sleep(1000)
       // this._pollOperator()
@@ -82,6 +107,30 @@ class Watchtower {
       await twitter.post('Bad stuff is happening on the chain!')
     } catch(e) {
       console.log(e)
+    }
+  }
+
+  async _initConnection () {
+    this.endpoint = 'http://plasma-node-cluster-ip-service:9898'
+    this.http = axios.create({
+      baseURL: this.endpoint.startsWith('http')
+        ? this.endpoint
+        : `https://${this.endpoint}`
+    })
+  }
+
+  async _sendRPC(method, params) {
+    try {
+      const response = await this.http.post('/', {
+        jsonrpc: '2.0',
+          method: method,
+          params: params,
+          id: uuidv4()
+      })
+
+      return JSON.parse(response.data)
+    } catch(e) {
+      throw e
     }
   }
 }

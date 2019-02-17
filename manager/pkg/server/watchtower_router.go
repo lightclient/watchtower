@@ -45,23 +45,29 @@ func (wt *watchtowerRouter) createWatchtowerJSONHandler(w http.ResponseWriter, r
 }
 
 func (wt *watchtowerRouter) createWatchtowerFormHandler(w http.ResponseWriter, r *http.Request) {
+	refer := r.Header.Get("Referer")
+
 	err := r.ParseForm()
 	if err != nil {
-		panic(err)
+		redirectFail(w, r, refer)
 	}
 
 	decoder := schema.NewDecoder()
 	var watchtowerAttributes root.WatchtowerAttributes
 	err = decoder.Decode(&watchtowerAttributes, r.PostForm)
 	if err != nil {
-		panic(err)
+		redirectFail(w, r, refer)
 	}
 
 	err = wt.watchtowerService.CreateWatchtower(watchtowerAttributes)
 	if err != nil {
-		panic(err)
+		redirectFail(w, r, refer)
 	}
 
-	redirectURL := fmt.Sprintf("%s?success=true&address=%s", r.Header.Get("Referer"), watchtowerAttributes.Address)
+	redirectURL := fmt.Sprintf("%s?success=true&address=%s", refer, watchtowerAttributes.Address)
 	http.Redirect(w, r, redirectURL, 302)
+}
+
+func redirectFail(w http.ResponseWriter, r *http.Request, url string) {
+	http.Redirect(w, r, fmt.Sprintf("%s?success=false", url), 302)
 }

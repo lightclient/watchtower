@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"os"
 
-	root "github.com/c-o-l-o-r/watchtower/pkg"
+	root "github.com/c-o-l-o-r/watchtower/manager/pkg"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 )

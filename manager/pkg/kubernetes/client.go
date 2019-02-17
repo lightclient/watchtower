@@ -1,7 +1,7 @@
 package kubernetes
 
 import (
-	root "github.com/c-o-l-o-r/watchtower/pkg"
+	root "github.com/c-o-l-o-r/watchtower/manager/pkg"
 	"k8s.io/client-go/kubernetes"
 	appsv1 "k8s.io/client-go/kubernetes/typed/apps/v1"
 	"k8s.io/client-go/rest"

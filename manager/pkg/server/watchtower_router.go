@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	root "github.com/c-o-l-o-r/watchtower/pkg"
+	root "github.com/c-o-l-o-r/watchtower/manager/pkg"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/schema"
 )

@@ -3,7 +3,7 @@ package config
 import (
 	"os"
 
-	root "github.com/c-o-l-o-r/watchtower/pkg"
+	root "github.com/c-o-l-o-r/watchtower/manager/pkg"
 )
 
 func GetConfig() *root.Config {

@@ -70,8 +70,8 @@ class Watchtower {
         }
       }
     } finally {
-      // await utils.sleep(1000)
-      // this._pollOperator()
+      await utils.sleep(10000)
+      this._pollOperator()
     }
   }
 
@@ -110,6 +110,9 @@ class Watchtower {
     }
   }
 
+  /**
+   * Initializes axios http connection to the Plasma node
+   */
   async _initConnection () {
     this.endpoint = 'http://plasma-node-cluster-ip-service:9898'
     this.http = axios.create({
@@ -119,6 +122,11 @@ class Watchtower {
     })
   }
 
+  /**
+   * Sends an RPC call over http to the Plasma node
+   * @param {string} method 
+   * @param {string | Object} params 
+   */
   async _sendRPC(method, params) {
     try {
       const response = await this.http.post('/', {

@@ -150,7 +150,7 @@ const Index string = `
 
       input[type=text] {
         padding: 0 5px;
-        height: 30px;
+        height: 36px;
         position: relative;
         left: 0;
         outline: none;
@@ -158,7 +158,7 @@ const Index string = `
         
         color: #fcfcfc;
         background-color: #131313;
-        font-size: 16px;
+        font-size: 14px;
       }
 
       input[type=text]:focus {
@@ -244,7 +244,7 @@ const Index string = `
           <i class="far fa-building"></i>
         </div>
         <div class="description">
-          Receive notifications of malicous activity on your Plasma chain via 
+          Receive notifications of malicious activity on your Plasma chain via 
           text message and our <a href="https://twitter.com/PlasmaMonitor">Twitter bot</a>.
         </div>
         <script type = "text/javascript">
